@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>Document</title>
+	<title>商品筛选</title>
 	<link rel="stylesheet" type="text/css" href="./css/style.css">
 </head>
 <body>
@@ -67,6 +67,7 @@
 		</nav>
 		<section class="shop-list"></section>
 	</div>
+	<script src="shoplist.js" type="text/javascript" charset="utf-8"></script>
 	<script>
 	var crumbData = [
 			{
@@ -92,6 +93,8 @@
 	newLi = null,
 	newSpan = null,
 	newA = null;
+	var filterChoose = ["name","size","system","www"];
+	var filterObj = {}
 	
 	for(var i=0;i<len;i++){
 		newLi = document.createElement("li");
@@ -124,6 +127,9 @@
 				parent.prevNode = this;
 				chooseObj[parent.index] = this.innerText;
 				createChooseHtml();
+				filterObj[filterChoose[parent.index]] = this.innerText.trim();
+				// 筛选出想要的数据
+				filterHandle()
 			}
 		}
 		
@@ -133,11 +139,34 @@
 		var html = "";
 		for(var i=0;i<lis.length;i++){
 			if(chooseObj[i]){
-				html +="<mark>"+chooseObj[i]+"<a href='javascript:;'>x</a></mark>";
+				html +=`<mark>${chooseObj[i]}<a href='javascript:;' data-index="${i}">x</a></mark>`;
 			}
 		}
 		chooseElement.innerHTML = html;
+		var chooseA = chooseElement.querySelectorAll("a");
+		for(var j=0;j<chooseA.length;j++){
+			chooseA[j].onclick = function(){
+				this.parentNode.remove();
+				delete chooseObj[this.dataset.index];
+				lis[this.dataset.index].prevNode.style.color = "";
+			}
+		}
 	}
+	var shopList = document.querySelector(".shop-list")
+	//筛选数据
+	function filterHandle(){
+		var filterArr = shopsList; // 等于原始数组
+		for(var attr in filterObj){
+			// 做一个过滤
+			filterArr = filterArr.filter(function(obj){
+				console.log(attr)
+				return obj[attr] === filterObj[attr]
+			})
+		}
+
+		shopList.innerHTML = '<pre>'+JSON.stringify(filterArr,null,3)+'</pre>';
+	}
+	
 	
 
 	</script>
